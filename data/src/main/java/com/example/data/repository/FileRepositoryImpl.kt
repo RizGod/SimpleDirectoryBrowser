@@ -25,5 +25,8 @@ class FileRepositoryImpl : FileRepository {
         return ".$ext"
     }
 
+    override fun isDirectoryFunction(file: File): Boolean {
+        return file.isDirectory
+    }
 
 }

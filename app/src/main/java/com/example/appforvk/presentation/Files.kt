@@ -45,7 +45,7 @@ fun Files(viewModel: MyViewModel) {
                         val comparator = when (sortType) {
                             "Size" -> compareBy { it.size }
                             "Date of creation" -> compareBy { it.dateOfCreation }
-                            else -> compareBy<MyFile> { it.icon }.thenBy { it.name }
+                            else -> compareBy<MyFile> { it.icon.length }.thenBy { it.name }
                         }
                         viewModel.sortFiles(comparator, ascending)
                     },
@@ -101,7 +101,7 @@ fun Files(viewModel: MyViewModel) {
                     modifier = Modifier.animateItemPlacement()
                 ) {
                     FileListItem(file = file) {
-                        viewModel.selectDirectory(it)
+                        viewModel.openFileOrDirectory(it)
                     }
                 }
             }

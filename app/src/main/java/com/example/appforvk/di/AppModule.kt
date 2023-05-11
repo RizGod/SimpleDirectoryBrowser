@@ -11,7 +11,8 @@ val appModule = module {
             getFileNameUseCase = get(),
             getFileSizeUseCase = get(),
             getFileDateOfCreationUseCase = get(),
-            getFileIconUseCase = get()
+            getFileIconUseCase = get(),
+            isDirectoryUseCase = get()
         )
     }
 }

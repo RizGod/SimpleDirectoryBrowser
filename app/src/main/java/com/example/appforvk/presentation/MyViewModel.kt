@@ -1,22 +1,19 @@
 package com.example.appforvk.presentation
 
 import android.os.Environment
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.domain.models.MyFile
-import com.example.domain.usecases.GetDateOfCreationUseCase
-import com.example.domain.usecases.GetFileIconUseCase
-import com.example.domain.usecases.GetFileNameUseCase
-import com.example.domain.usecases.GetFileSizeUseCase
+import com.example.domain.usecases.*
 import java.io.File
 
 class MyViewModel(
     private val getFileNameUseCase: GetFileNameUseCase,
     private val getFileSizeUseCase: GetFileSizeUseCase,
     private val getFileDateOfCreationUseCase: GetDateOfCreationUseCase,
-    private val getFileIconUseCase: GetFileIconUseCase
+    private val getFileIconUseCase: GetFileIconUseCase,
+    private val isDirectoryUseCase: FileIsDirectoryUseCase
 ) : ViewModel() {
     val menuItems = listOf("Size", "Date of creation", "Extension")
 
@@ -24,11 +21,11 @@ class MyViewModel(
     private var directoryFiles = Environment.getExternalStorageDirectory()
 
     private val _files =
-        MutableLiveData(getFiles(directoryFiles.listFiles()))
+        MutableLiveData(getFiles(directoryFiles.listFiles()).sortedBy { it.name })
 
     val files: LiveData<List<MyFile>> get() = _files
 
-    fun selectDirectory(directory: MyFile) {
+    fun openFileOrDirectory(directory: MyFile) {
         directoryFiles = File("${directoryFiles.path}/${directory.name}")
         _files.value = getFiles(directoryFiles.listFiles())
     }
@@ -58,7 +55,8 @@ class MyViewModel(
             name = getFileNameUseCase.execute(it),
             size = getFileSizeUseCase.execute(it),
             dateOfCreation = getFileDateOfCreationUseCase.execute(it),
-            icon = getFileIconUseCase.execute(it)
+            icon = getFileIconUseCase.execute(it),
+            isDirectory = isDirectoryUseCase.execute(it)
         )
     }?.toList() ?: emptyList()
 }

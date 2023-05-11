@@ -5,11 +5,13 @@ import java.util.Date
 
 interface FileRepository {
 
-    fun getFileName(file : File) : String
+    fun getFileName(file: File): String
 
-    fun getFileSize(file: File) : Long
+    fun getFileSize(file: File): Long
 
-    fun getDateOfCreation(file: File) : Date
+    fun getDateOfCreation(file: File): Date
 
-    fun getFileIcon(file: File) : String
+    fun getFileIcon(file: File): String
+
+    fun isDirectoryFunction(file: File): Boolean
 }

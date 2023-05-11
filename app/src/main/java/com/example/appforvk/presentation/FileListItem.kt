@@ -24,7 +24,7 @@ fun FileListItem(file: MyFile, onClick: (file: MyFile) -> Unit) {
             .padding(horizontal = 8.dp, vertical = 8.dp)
             .fillMaxWidth()
             .clickable(
-                enabled = file.icon == "."
+                enabled = file.isDirectory
             ) {
                 onClick(file)
             },
@@ -37,7 +37,7 @@ fun FileListItem(file: MyFile, onClick: (file: MyFile) -> Unit) {
                 .fillMaxWidth()
         ) {
             Image(
-                painter = painterResource(id = getIcon(file.icon)),
+                painter = painterResource(id = getIcon(file)),
                 contentDescription = "File image",
                 modifier = Modifier
                     .wrapContentWidth()
@@ -53,7 +53,7 @@ fun FileListItem(file: MyFile, onClick: (file: MyFile) -> Unit) {
                     text = file.name,
                     fontSize = 16.sp
                 )
-                if (file.icon != ".") {
+                if (!file.isDirectory) {
                     val formatter =
                         SimpleDateFormat("dd MMMM yyyy, HH:mm:ss", Locale.getDefault())
                     val dateString = formatter.format(file.dateOfCreation)
@@ -62,7 +62,7 @@ fun FileListItem(file: MyFile, onClick: (file: MyFile) -> Unit) {
                     )
                 }
             }
-            if (file.icon != ".")
+            if (!file.isDirectory)
                 Text(
                     text = formatFileSize(file.size),
                     modifier = Modifier.padding(8.dp)
@@ -71,16 +71,18 @@ fun FileListItem(file: MyFile, onClick: (file: MyFile) -> Unit) {
     }
 }
 
-private fun getIcon(icon: String): Int {
-    return when (icon) {
+private fun getIcon(file: MyFile): Int {
+    return when (file.icon) {
         ".png", ".jpg", ".jpeg", ".gif", ".bmp" -> drawable.image
         ".mp3", ".wav", ".ogg", "midi" -> drawable.audio
         ".mp4", ".rmvb", ".avi", ".flv", ".3gp" -> drawable.video
         ".pdf" -> drawable.pdf
         ".jar", ".zip", ".rar", ".gz" -> drawable.zip
         ".apk" -> drawable.apk
-        "." -> drawable.folder
-        else -> drawable.file
+        else -> if (file.isDirectory)
+            drawable.folder
+        else
+            drawable.file
     }
 }
 
@@ -104,7 +106,8 @@ fun Preview() {
                 name = "Images",
                 size = 13L,
                 dateOfCreation = Date(),
-                icon = ".png"
+                icon = ".png",
+                false
             )
         )
         {}
