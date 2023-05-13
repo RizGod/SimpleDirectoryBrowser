@@ -25,10 +25,16 @@ class MyViewModel(
 
     val files: LiveData<List<MyFile>> get() = _files
 
-    fun openFileOrDirectory(directory: MyFile) {
-        directoryFiles = File("${directoryFiles.path}/${directory.name}")
-        _files.value = getFiles(directoryFiles.listFiles())
+    fun openFileOrDirectory(myFile: MyFile): Boolean {
+        return if (myFile.isDirectory) {
+            directoryFiles = File("${directoryFiles.path}/${myFile.name}")
+            _files.value = getFiles(directoryFiles.listFiles())
+            false
+        } else
+            true
     }
+
+    fun getCurrentDirectory(): String = directoryFiles.path
 
     fun sortFiles(comparator: Comparator<MyFile>, ascending: Boolean) {
         _files.value =

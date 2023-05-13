@@ -23,9 +23,7 @@ fun FileListItem(file: MyFile, onClick: (file: MyFile) -> Unit) {
         modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 8.dp)
             .fillMaxWidth()
-            .clickable(
-                enabled = file.isDirectory
-            ) {
+            .clickable {
                 onClick(file)
             },
         elevation = 2.dp

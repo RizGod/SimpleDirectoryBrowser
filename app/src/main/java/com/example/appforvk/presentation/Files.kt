@@ -1,5 +1,8 @@
 package com.example.appforvk.presentation
 
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -13,16 +16,29 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
 import com.example.appforvk.R
 import com.example.domain.models.MyFile
+import java.io.File
+
+
+private const val AUTHORITY_FILE_PROVIDER = "com.example.appforvk.fileprovider"
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Files(viewModel: MyViewModel) {
+
+    val context = LocalContext.current
+
+    val openFileLauncher =
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {}
 
     val fileList by viewModel.files.observeAsState()
 
@@ -101,7 +117,19 @@ fun Files(viewModel: MyViewModel) {
                     modifier = Modifier.animateItemPlacement()
                 ) {
                     FileListItem(file = file) {
-                        viewModel.openFileOrDirectory(it)
+                        if (viewModel.openFileOrDirectory(it)) {
+                            val path = viewModel.getCurrentDirectory() + "/${it.name}"
+                            val uri = FileProvider.getUriForFile(
+                                context,
+                                AUTHORITY_FILE_PROVIDER,
+                                File(path)
+                            )
+                            val intent = Intent(Intent.ACTION_VIEW).apply {
+                                setDataAndType(uri, "*/*")
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            }
+                            openFileLauncher.launch(intent)
+                        }
                     }
                 }
             }
